@@ -10,6 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
+import java.lang.Exception
 
 
 private const val BASE_URL = "https://www.bing.com/"
@@ -78,5 +79,18 @@ object BingWallpapersApi {
                 val msg = t.message
             }
         })
+    }
+
+    fun getImageBlocking(): Boolean {
+        val call = retrofitService.getProperties("js", 1, "en-US")
+        val response: Response<bingImageData>
+        try {
+            response = call.execute()
+        }
+        catch (e: Exception) {
+            return false
+        }
+        val image = response.body()?.images?.firstOrNull()
+        return true
     }
 }

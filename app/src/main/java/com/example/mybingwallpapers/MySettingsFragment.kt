@@ -40,10 +40,10 @@ class MySettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun startJob() {
-        // do now TODO
-        BingWallpapersApi.getImage()
+        // start one-time job for getting - now
+        GetImageWorker.start(requireContext())
 
-        // start one-time job
+        // start one-time job for scheduling
         val c = Calendar.getInstance()
         val hour = c.get(Calendar.HOUR_OF_DAY).toLong()
         val minute = c.get(Calendar.MINUTE)
@@ -53,7 +53,7 @@ class MySettingsFragment : PreferenceFragmentCompat() {
         else
             workHour + 24L
         val delaySec = TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(TimeUnit.HOURS.toMinutes(hour) + minute) - second
-        val oneTimeWork = OneTimeWorkRequestBuilder<OneTimeWorker>()
+        val startSchedulerWork = OneTimeWorkRequestBuilder<PeriodicWorkStarter>()
             .setInitialDelay(delaySec, TimeUnit.SECONDS)
             // leave backoff default
             .setConstraints(
@@ -62,18 +62,18 @@ class MySettingsFragment : PreferenceFragmentCompat() {
                     .build()
             )
             .build()
-        workManager.enqueueUniqueWork(OneTimeWorker.workName,
+        workManager.enqueueUniqueWork(PeriodicWorkStarter.workName,
             ExistingWorkPolicy.REPLACE,
-            oneTimeWork)
-
+            startSchedulerWork)
         // from there - start periodic job
     }
 
     private fun cancelJob() {
         // val infos = workManager.getWorkInfosForUniqueWork(workName)
         // infos.get().firstOrNull()?.state
-        workManager.cancelUniqueWork(OneTimeWorker.workName)
-        workManager.cancelUniqueWork(MainWorker.workName)
+        workManager.cancelUniqueWork(PeriodicWorkStarter.workName)
+        workManager.cancelUniqueWork(PeriodicWorker.workName)
+        workManager.cancelUniqueWork(GetImageWorker.workName)
     }
 
 }
