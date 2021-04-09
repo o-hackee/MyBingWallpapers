@@ -1,5 +1,6 @@
 package com.example.mybingwallpapers
 
+import android.app.WallpaperManager
 import android.content.Context
 import androidx.work.*
 import java.util.concurrent.TimeUnit
@@ -27,10 +28,13 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun doWork(): Result {
-        return if (BingWallpapersApi.getImageBlocking())
-            Result.success()
-        else
-            Result.retry()
+        // get three URLs
+        // if there are different - log, silently indicate, proceed with one
+
+        val imageId = BingWallpapersApi.getImageInfoBlocking() ?: return Result.retry()
+        val stream = BingWallpapersApi.downloadImage(imageId) ?: return Result.retry()
+        WallpaperManager.getInstance(applicationContext).setStream(stream)
+        return Result.success()
     }
 }
 

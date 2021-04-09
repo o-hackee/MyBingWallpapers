@@ -1,8 +1,8 @@
 package com.example.mybingwallpapers
 
-import android.widget.Toast
 import com.squareup.moshi.Moshi
 import com.squareup.moshi.kotlin.reflect.KotlinJsonAdapterFactory
+import okhttp3.ResponseBody
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
@@ -10,6 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
+import java.io.InputStream
 import java.lang.Exception
 
 
@@ -18,8 +19,11 @@ private const val BASE_URL = "https://www.bing.com/"
 private val moshi = Moshi.Builder()
     .add(KotlinJsonAdapterFactory())
     .build()
-private val retrofit = Retrofit.Builder()
+private val retrofitJson = Retrofit.Builder()
     .addConverterFactory(MoshiConverterFactory.create(moshi))
+    .baseUrl(BASE_URL)
+    .build()
+private val retrofitImage = Retrofit.Builder()
     .baseUrl(BASE_URL)
     .build()
 
@@ -56,20 +60,26 @@ data class Tooltips(
 
 interface BingWallpapersService {
     @GET("HPImageArchive.aspx")
-    fun getProperties(
+    fun getImageInfo(
         @Query("format") format: String,
         @Query("n") number: Int,
         @Query("mkt") market: String
     ): Call<bingImageData>
+
+    @GET("th")
+    fun downloadImage(@Query("id") id: String): Call<ResponseBody>
 }
 
 object BingWallpapersApi {
-    private val retrofitService: BingWallpapersService by lazy {
-        retrofit.create(BingWallpapersService::class.java)
+    private val retrofitJsonService: BingWallpapersService by lazy {
+        retrofitJson.create(BingWallpapersService::class.java)
+    }
+    private val retrofitImageService: BingWallpapersService by lazy {
+        retrofitImage.create(BingWallpapersService::class.java)
     }
 
-    fun getImage() {
-        val call = retrofitService.getProperties("js", 1, "en-US")
+    fun getImageInfo() {
+        val call = retrofitJsonService.getImageInfo("js", 1, "en-US")
         call.enqueue(object : Callback<bingImageData> {
             override fun onResponse(call: Call<bingImageData>, response: Response<bingImageData>) {
                 val image = response.body()?.images?.firstOrNull()
@@ -81,16 +91,31 @@ object BingWallpapersApi {
         })
     }
 
-    fun getImageBlocking(): Boolean {
-        val call = retrofitService.getProperties("js", 1, "en-US")
+    fun getImageInfoBlocking(): String? {
+        val call = retrofitJsonService.getImageInfo("js", 1, "en-US")
         val response: Response<bingImageData>
         try {
             response = call.execute()
         }
         catch (e: Exception) {
-            return false
+            return null
         }
-        val image = response.body()?.images?.firstOrNull()
-        return true
+        val image = response.body()?.images?.firstOrNull() ?: return null
+        if (!image.urlbase.startsWith("/th?id="))
+            return null
+        return image.urlbase.drop(7) + "_720x1280.jpg"
+    }
+
+    fun downloadImage(imageId: String): InputStream? {
+        val call = retrofitImageService.downloadImage(imageId)
+        val response: Response<ResponseBody>
+        try {
+            response = call.execute()
+        }
+        catch (e: Exception) {
+            return null
+        }
+        val image = response.body() ?: return null
+        return image.byteStream()
     }
 }
