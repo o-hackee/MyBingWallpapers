@@ -3,6 +3,7 @@ package com.example.mybingwallpapers
 import android.app.WallpaperManager
 import android.content.Context
 import androidx.work.*
+import timber.log.Timber
 import java.util.concurrent.TimeUnit
 
 class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
@@ -11,6 +12,7 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
         const val workName = "getImage"
 
         fun start(context: Context) {
+            Timber.i("b1 GetImageWorker queued")
             val getterWork = OneTimeWorkRequestBuilder<GetImageWorker>()
                 // leave backoff default
                 .setConstraints(
@@ -30,10 +32,21 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
     override fun doWork(): Result {
         // get three URLs
         // if there are different - log, silently indicate, proceed with one
+        // TODO need logging
+        Timber.i("b1 GetImageWorker work")
 
-        val imageId = BingWallpapersApi.getImageInfoBlocking() ?: return Result.retry()
-        val stream = BingWallpapersApi.downloadImage(imageId) ?: return Result.retry()
+        val imageId = BingWallpapersApi.getImageInfoBlocking()
+        if (imageId == null) {
+            Timber.i("b1 GetImageWorker work failed info")
+            return Result.retry()
+        }
+        val stream = BingWallpapersApi.downloadImage(imageId)
+        if (stream == null) {
+            Timber.i("b1 GetImageWorker work failed download")
+            return Result.retry()
+        }
         WallpaperManager.getInstance(applicationContext).setStream(stream)
+        Timber.i("b1 GetImageWorker success")
         return Result.success()
     }
 }
@@ -45,6 +58,8 @@ class PeriodicWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun doWork(): Result {
+        Timber.i("b1 PeriodicWorker work")
+
         // start one-time job for getting - now
         GetImageWorker.start(applicationContext)
 
@@ -60,6 +75,8 @@ class PeriodicWorkStarter(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun doWork(): Result {
+        Timber.i("b1 PeriodicWorkStarter work")
+
         // start one-time job for getting - now
         GetImageWorker.start(applicationContext)
 

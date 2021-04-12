@@ -10,6 +10,7 @@ import retrofit2.Retrofit
 import retrofit2.converter.moshi.MoshiConverterFactory
 import retrofit2.http.GET
 import retrofit2.http.Query
+import timber.log.Timber
 import java.io.InputStream
 import java.lang.Exception
 
@@ -98,11 +99,14 @@ object BingWallpapersApi {
             response = call.execute()
         }
         catch (e: Exception) {
+            Timber.e("b1 getImageInfoBlocking ${e.message}")
             return null
         }
         val image = response.body()?.images?.firstOrNull() ?: return null
-        if (!image.urlbase.startsWith("/th?id="))
+        if (!image.urlbase.startsWith("/th?id=")) {
+            Timber.e("b1 getImageInfoBlocking urlbase = ${image.urlbase}")
             return null
+        }
         return image.urlbase.drop(7) + "_720x1280.jpg"
     }
 
@@ -113,9 +117,14 @@ object BingWallpapersApi {
             response = call.execute()
         }
         catch (e: Exception) {
+            Timber.e("b1 downloadImage ${e.message}")
             return null
         }
-        val image = response.body() ?: return null
+        val image = response.body()
+        if (image == null) {
+            Timber.e("b1 downloadImage empty body")
+            return null
+        }
         return image.byteStream()
     }
 }
