@@ -4,6 +4,7 @@ import android.app.WallpaperManager
 import android.content.Context
 import androidx.work.*
 import timber.log.Timber
+import java.lang.Exception
 import java.util.concurrent.TimeUnit
 
 class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
@@ -30,12 +31,11 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun doWork(): Result {
-        // get three URLs
+        // TODO get three URLs
         // if there are different - log, silently indicate, proceed with one
-        // TODO need logging
-        Timber.i("b1 GetImageWorker work")
 
         val imageId = BingWallpapersApi.getImageInfoBlocking()
+        Timber.i("b1 GetImageWorker imageId = $imageId")
         if (imageId == null) {
             Timber.i("b1 GetImageWorker work failed info")
             return Result.retry()
@@ -45,7 +45,12 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
             Timber.i("b1 GetImageWorker work failed download")
             return Result.retry()
         }
-        WallpaperManager.getInstance(applicationContext).setStream(stream)
+        try {
+            WallpaperManager.getInstance(applicationContext).setStream(stream)
+        } catch (e: Exception) {
+            Timber.e("b1 GetImageWorker set wallpaper failed with ${e.message}")
+            return Result.retry()
+        }
         Timber.i("b1 GetImageWorker success")
         return Result.success()
     }
