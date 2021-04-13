@@ -69,8 +69,6 @@ class MySettingsFragment : PreferenceFragmentCompat() {
     }
 
     private fun cancelJob() {
-        // val infos = workManager.getWorkInfosForUniqueWork(workName)
-        // infos.get().firstOrNull()?.state
         workManager.cancelUniqueWork(PeriodicWorkStarter.workName)
         workManager.cancelUniqueWork(PeriodicWorker.workName)
         workManager.cancelUniqueWork(GetImageWorker.workName)

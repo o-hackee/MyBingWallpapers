@@ -2,6 +2,7 @@
 <androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
 
     <SwitchPreferenceCompat
+        app:iconSpaceReserved="false"
         app:key="active"
         app:title="Enable getting images daily" />
 
