@@ -8,10 +8,12 @@ import androidx.work.WorkInfo
 import androidx.work.WorkManager
 
 class WorkStatusViewModel(application: Application) : AndroidViewModel(application) {
-    
+
+    private val periodicWorkStarterInfos: LiveData<List<WorkInfo>> = WorkManager.getInstance(application).getWorkInfosForUniqueWorkLiveData(PeriodicWorkStarter.workName)
     private val periodicWorkerInfos: LiveData<List<WorkInfo>> = WorkManager.getInstance(application).getWorkInfosForUniqueWorkLiveData(PeriodicWorker.workName)
     private val getImageWorkerInfos: LiveData<List<WorkInfo>> = WorkManager.getInstance(application).getWorkInfosForUniqueWorkLiveData(GetImageWorker.workName)
 
+    val displayPeriodicWorkStarterInfos = Transformations.map(periodicWorkStarterInfos) { workStatus(it, PeriodicWorkStarter.workName) }
     val displayPeriodicWorkerInfos = Transformations.map(periodicWorkerInfos) { workStatus(it, PeriodicWorker.workName) }
     val displayGetImageWorkerInfos = Transformations.map(getImageWorkerInfos) { workStatus(it, GetImageWorker.workName) }
 

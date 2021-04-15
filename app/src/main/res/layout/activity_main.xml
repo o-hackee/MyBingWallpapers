@@ -30,12 +30,23 @@
             app:layout_constraintTop_toBottomOf="@+id/settings_container">
 
             <com.google.android.material.textview.MaterialTextView
-                android:id="@+id/statusViewPeriodicWorker"
+                android:id="@+id/statusViewPeriodicWorkStarter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:paddingStart="16dp"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
+                android:text="@{viewModel.displayPeriodicWorkStarterInfos}"
+                tools:text="periodicWorkStarter">
+
+            </com.google.android.material.textview.MaterialTextView>
+            <com.google.android.material.textview.MaterialTextView
+                android:id="@+id/statusViewPeriodicWorker"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingStart="16dp"
+                app:layout_constraintStart_toStartOf="parent"
+                app:layout_constraintTop_toBottomOf="@+id/statusViewPeriodicWorkStarter"
                 android:text="@{viewModel.displayPeriodicWorkerInfos}"
                 tools:text="periodicWorker">
 

@@ -56,8 +56,8 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun onStopped() {
-        Timber.i("b1 GetImageWorker stopped")
         super.onStopped()
+        // TODO just for the logging purposes
     }
 }
 
@@ -78,8 +78,46 @@ class PeriodicWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun onStopped() {
-        Timber.i("b1 PeriodicWorker stopped")
         super.onStopped()
+        // TODO just for the logging purposes
+    }
+}
+
+// TODO you can also set an initial delay for a PeriodicWorkRequest. In that case, only the first run of your periodic work would be delayed
+// check later
+class PeriodicWorkStarter(appContext: Context, workerParams: WorkerParameters) :
+    Worker(appContext, workerParams) {
+    companion object {
+        const val workName = "startPeriodic"
+    }
+
+    override fun doWork(): Result {
+        Timber.i("b1 PeriodicWorkStarter work")
+
+        // start one-time job for getting - now
+        GetImageWorker.start(applicationContext)
+
+        // start periodic job
+        val getImageWorkRequest =
+            PeriodicWorkRequestBuilder<PeriodicWorker>(
+                1, TimeUnit.DAYS,
+                1, TimeUnit.HOURS
+            )
+                .setConstraints(
+                    Constraints.Builder()
+                        .setRequiresBatteryNotLow(true)
+                        .build()
+                )
+                .build()
+        WorkManager.getInstance(applicationContext).enqueueUniquePeriodicWork(
+            PeriodicWorker.workName,
+            ExistingPeriodicWorkPolicy.REPLACE,
+            getImageWorkRequest
+        )
+
+        // Indicate whether the work finished successfully with the Result
+        return Result.success()
+
     }
 }
 

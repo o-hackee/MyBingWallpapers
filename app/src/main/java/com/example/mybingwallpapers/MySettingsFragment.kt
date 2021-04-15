@@ -43,7 +43,7 @@ class MySettingsFragment : PreferenceFragmentCompat() {
         // start one-time job for getting - now
         GetImageWorker.start(requireContext())
 
-        // start periodic job with an initial delay
+        // start one-time job for scheduling
         val c = Calendar.getInstance()
         val hour = c.get(Calendar.HOUR_OF_DAY).toLong()
         val minute = c.get(Calendar.MINUTE)
@@ -53,27 +53,23 @@ class MySettingsFragment : PreferenceFragmentCompat() {
         else
             workHour + 24L
         val delaySec = TimeUnit.HOURS.toSeconds(hours) - TimeUnit.MINUTES.toSeconds(TimeUnit.HOURS.toMinutes(hour) + minute) - second
-
-        val getImageWorkRequest =
-            PeriodicWorkRequestBuilder<PeriodicWorker>(
-                1, TimeUnit.DAYS,
-                1, TimeUnit.HOURS
+        val startSchedulerWork = OneTimeWorkRequestBuilder<PeriodicWorkStarter>()
+            .setInitialDelay(delaySec, TimeUnit.SECONDS)
+            // leave backoff default
+            .setConstraints(
+                Constraints.Builder()
+                    .setRequiresBatteryNotLow(true)
+                    .build()
             )
-                .setInitialDelay(delaySec, TimeUnit.SECONDS)
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiresBatteryNotLow(true)
-                        .build()
-                )
-                .build()
-        workManager.enqueueUniquePeriodicWork(
-            PeriodicWorker.workName,
-            ExistingPeriodicWorkPolicy.REPLACE,
-            getImageWorkRequest
-        )
+            .build()
+        workManager.enqueueUniqueWork(PeriodicWorkStarter.workName,
+            ExistingWorkPolicy.REPLACE,
+            startSchedulerWork)
+        // from there - start periodic job
     }
 
     private fun cancelJob() {
+        workManager.cancelUniqueWork(PeriodicWorkStarter.workName)
         workManager.cancelUniqueWork(PeriodicWorker.workName)
         workManager.cancelUniqueWork(GetImageWorker.workName)
     }
