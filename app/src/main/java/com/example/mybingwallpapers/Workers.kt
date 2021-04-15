@@ -2,6 +2,7 @@ package com.example.mybingwallpapers
 
 import android.app.WallpaperManager
 import android.content.Context
+import androidx.preference.PreferenceManager
 import androidx.work.*
 import timber.log.Timber
 import java.lang.Exception
@@ -31,10 +32,13 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun doWork(): Result {
-        // TODO get three URLs
-        // if there are different - log, silently indicate, proceed with one
-
-        val imageId = BingWallpapersApi.getImageInfoBlocking()
+        val market = PreferenceManager.getDefaultSharedPreferences(applicationContext)
+            .getString(applicationContext.getString(R.string.key_selected_market), "")
+        if (market == null){
+            Timber.i("b1 couldn't get a market")
+            return Result.failure()
+        }
+        val imageId = BingWallpapersApi.getImageInfoBlocking(market)
         Timber.i("b1 GetImageWorker imageId = $imageId")
         if (imageId == null) {
             Timber.i("b1 GetImageWorker work failed info")

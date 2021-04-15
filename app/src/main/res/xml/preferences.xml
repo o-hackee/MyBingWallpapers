@@ -1,9 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto">
+<androidx.preference.PreferenceScreen xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
 
     <SwitchPreferenceCompat
         app:iconSpaceReserved="false"
-        app:key="active"
+        app:key="@string/key_active"
         app:title="Enable getting images daily" />
-
+    <ListPreference
+        app:iconSpaceReserved="false"
+        android:title="Market..."
+        android:key="@string/key_selected_market"
+        android:summary="%s"
+        android:defaultValue="ru-RU"
+        android:entries="@array/markets"
+        android:entryValues="@array/markets" />
 </androidx.preference.PreferenceScreen>

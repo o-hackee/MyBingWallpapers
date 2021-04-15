@@ -34,7 +34,7 @@ data class bingImageData(
 )
 
 data class bingImage(
-    val startdate: String, // TODO convert? +2
+    val startdate: String,
     val fullstartdate: String,
     val enddate: String,
     val url: String,
@@ -92,8 +92,8 @@ object BingWallpapersApi {
         })
     }
 
-    fun getImageInfoBlocking(): String? {
-        val call = retrofitJsonService.getImageInfo("js", 1, "en-US")
+    fun getImageInfoBlocking(market: String): String? {
+        val call = retrofitJsonService.getImageInfo("js", 1, market)
         val response: Response<bingImageData>
         try {
             response = call.execute()
@@ -107,6 +107,7 @@ object BingWallpapersApi {
             Timber.e("b1 getImageInfoBlocking urlbase = ${image.urlbase}")
             return null
         }
+        Timber.i("b1 fullstartdate: ${image.fullstartdate}")
         return image.urlbase.drop(7) + "_720x1280.jpg"
     }
 

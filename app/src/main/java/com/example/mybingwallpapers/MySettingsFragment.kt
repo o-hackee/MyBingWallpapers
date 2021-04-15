@@ -1,6 +1,7 @@
 package com.example.mybingwallpapers
 
 import android.os.Bundle
+import androidx.preference.ListPreference
 import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
@@ -9,33 +10,51 @@ import java.util.*
 import java.util.concurrent.TimeUnit
 
 class MySettingsFragment : PreferenceFragmentCompat() {
-    private val activeSettingKey = "active"
-    private val workHour = 6
+    private val activeSettingKey by lazy { getString(R.string.key_active) }
+    private val selectedMarketSettingKey by lazy { getString(R.string.key_selected_market) }
+    private val workHour = 8
     private val workManager by lazy { WorkManager.getInstance(requireContext()) }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {
         setPreferencesFromResource(R.xml.preferences, rootKey)
-        val signaturePreference: SwitchPreferenceCompat? = findPreference(activeSettingKey)
-        signaturePreference?.onPreferenceChangeListener = Preference.OnPreferenceChangeListener(::onPreferenceChange)
-
+        val activePreference = findPreference<SwitchPreferenceCompat>(activeSettingKey)
+        val onPreferenceChangeListener = Preference.OnPreferenceChangeListener(::onPreferenceChange)
+        activePreference?.onPreferenceChangeListener = onPreferenceChangeListener
+        val marketPreference = findPreference<ListPreference>(selectedMarketSettingKey)
+        marketPreference?.onPreferenceChangeListener = onPreferenceChangeListener
     }
 
     private fun onPreferenceChange(preference: Preference, newValue: Any): Boolean {
-        if (preference.key != activeSettingKey)
-            return true
-        val isCurrentlyActive = preference.sharedPreferences.getBoolean(activeSettingKey, false)
-        if (isCurrentlyActive) {
-            if (newValue == false) {
-                cancelJob()
+        when (preference.key) {
+            activeSettingKey -> {
+                val isCurrentlyActive = preference.sharedPreferences.getBoolean(activeSettingKey, false)
+                if (isCurrentlyActive) {
+                    if (newValue == false) {
+                        cancelJob()
+                        return true
+                    }
+                } else {
+                    if (newValue == true) {
+                        startJob()
+                        return true
+                    }
+                }
+
                 return true
             }
-        } else {
-            if (newValue == true) {
-                startJob()
+            selectedMarketSettingKey -> {
+                val isCurrentlyActive = preference.sharedPreferences.getBoolean(activeSettingKey, false)
+                if (isCurrentlyActive) {
+                    val currentMarket =
+                        preference.sharedPreferences.getString(selectedMarketSettingKey, "")
+                    if (currentMarket != newValue) {
+                        startJob()
+                        return true
+                    }
+                }
                 return true
             }
         }
-
         return true
     }
 
