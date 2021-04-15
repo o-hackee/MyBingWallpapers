@@ -56,8 +56,8 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun onStopped() {
+        Timber.i("b1 GetImageWorker stopped")
         super.onStopped()
-        // TODO just for the logging purposes
     }
 }
 
@@ -78,13 +78,11 @@ class PeriodicWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun onStopped() {
+        Timber.i("b1 PeriodicWorker stopped")
         super.onStopped()
-        // TODO just for the logging purposes
     }
 }
 
-// TODO you can also set an initial delay for a PeriodicWorkRequest. In that case, only the first run of your periodic work would be delayed
-// check later
 class PeriodicWorkStarter(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
     companion object {
@@ -118,6 +116,11 @@ class PeriodicWorkStarter(appContext: Context, workerParams: WorkerParameters) :
         // Indicate whether the work finished successfully with the Result
         return Result.success()
 
+    }
+
+    override fun onStopped() {
+        Timber.i("b1 PeriodicWorkStarter stopped")
+        super.onStopped()
     }
 }
 
