@@ -12,7 +12,7 @@ import java.util.concurrent.TimeUnit
 class MySettingsFragment : PreferenceFragmentCompat() {
     private val activeSettingKey by lazy { getString(R.string.key_active) }
     private val selectedMarketSettingKey by lazy { getString(R.string.key_selected_market) }
-    private val workHour = 8
+    private val workHour = 10
     private val workManager by lazy { WorkManager.getInstance(requireContext()) }
 
     override fun onCreatePreferences(savedInstanceState: Bundle?, rootKey: String?) {

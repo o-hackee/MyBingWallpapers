@@ -107,7 +107,7 @@ object BingWallpapersApi {
             Timber.e("b1 getImageInfoBlocking urlbase = ${image.urlbase}")
             return null
         }
-        Timber.i("b1 fullstartdate: ${image.fullstartdate}")
+        Timber.i("b1 fullstartdate: ${image.fullstartdate} copyright = ${image.copyright}")
         return image.urlbase.drop(7) + "_720x1280.jpg"
     }
 
