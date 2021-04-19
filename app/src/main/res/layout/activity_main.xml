@@ -6,7 +6,7 @@
     <data>
         <variable
             name="viewModel"
-            type="com.example.mybingwallpapers.WorkStatusViewModel" />
+            type="com.example.mybingwallpapers.ui.WorkStatusViewModel" />
     </data>
 
     <androidx.constraintlayout.widget.ConstraintLayout

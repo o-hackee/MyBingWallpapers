@@ -1,4 +1,4 @@
-package com.example.mybingwallpapers
+package com.example.mybingwallpapers.ui
 
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
@@ -6,6 +6,9 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.Transformations
 import androidx.work.WorkInfo
 import androidx.work.WorkManager
+import com.example.mybingwallpapers.work.GetImageWorker
+import com.example.mybingwallpapers.work.PeriodicWorkStarter
+import com.example.mybingwallpapers.work.PeriodicWorker
 
 class WorkStatusViewModel(application: Application) : AndroidViewModel(application) {
 

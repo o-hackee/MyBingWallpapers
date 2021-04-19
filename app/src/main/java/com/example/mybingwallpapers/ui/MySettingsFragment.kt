@@ -1,4 +1,4 @@
-package com.example.mybingwallpapers
+package com.example.mybingwallpapers.ui
 
 import android.os.Bundle
 import androidx.preference.ListPreference
@@ -6,6 +6,10 @@ import androidx.preference.Preference
 import androidx.preference.PreferenceFragmentCompat
 import androidx.preference.SwitchPreferenceCompat
 import androidx.work.*
+import com.example.mybingwallpapers.work.GetImageWorker
+import com.example.mybingwallpapers.work.PeriodicWorkStarter
+import com.example.mybingwallpapers.work.PeriodicWorker
+import com.example.mybingwallpapers.R
 import java.util.*
 import java.util.concurrent.TimeUnit
 

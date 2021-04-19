@@ -3,6 +3,7 @@ package com.example.mybingwallpapers
 import android.app.Application
 import timber.log.Timber
 import androidx.work.Configuration
+import com.example.mybingwallpapers.utils.FileLoggingTree
 
 class MyApplication : Application(), Configuration.Provider {
 

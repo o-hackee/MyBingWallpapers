@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import androidx.lifecycle.ViewModelProvider
 import com.example.mybingwallpapers.databinding.ActivityMainBinding
+import com.example.mybingwallpapers.ui.MySettingsFragment
+import com.example.mybingwallpapers.ui.WorkStatusViewModel
 
 class MainActivity : AppCompatActivity() {
 

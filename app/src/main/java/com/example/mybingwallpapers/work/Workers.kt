@@ -1,9 +1,11 @@
-package com.example.mybingwallpapers
+package com.example.mybingwallpapers.work
 
 import android.app.WallpaperManager
 import android.content.Context
 import androidx.preference.PreferenceManager
 import androidx.work.*
+import com.example.mybingwallpapers.http.BingWallpapersApi
+import com.example.mybingwallpapers.R
 import timber.log.Timber
 import java.lang.Exception
 import java.util.concurrent.TimeUnit

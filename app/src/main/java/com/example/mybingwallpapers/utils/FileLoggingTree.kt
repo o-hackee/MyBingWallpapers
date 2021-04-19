@@ -1,4 +1,4 @@
-package com.example.mybingwallpapers
+package com.example.mybingwallpapers.utils
 
 import android.content.Context
 import timber.log.Timber
