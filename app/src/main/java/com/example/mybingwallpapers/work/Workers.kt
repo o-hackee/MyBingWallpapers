@@ -1,11 +1,14 @@
 package com.example.mybingwallpapers.work
 
+import android.app.NotificationManager
 import android.app.WallpaperManager
 import android.content.Context
+import androidx.core.content.ContextCompat
 import androidx.preference.PreferenceManager
 import androidx.work.*
 import com.example.mybingwallpapers.http.BingWallpapersApi
 import com.example.mybingwallpapers.R
+import com.example.mybingwallpapers.utils.sendNotification
 import timber.log.Timber
 import java.lang.Exception
 import java.util.concurrent.TimeUnit
@@ -14,17 +17,21 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
     Worker(appContext, workerParams) {
     companion object {
         const val workName = "getImage"
+        const val withNotificationDataField = "withNotification"
 
-        fun start(context: Context) {
+        fun start(context: Context, withNotification: Boolean = false) {
             Timber.i("b1 GetImageWorker queued")
-            val getterWork = OneTimeWorkRequestBuilder<GetImageWorker>()
-                // leave backoff default
-                .setConstraints(
-                    Constraints.Builder()
-                        .setRequiresBatteryNotLow(true)
-                        .build()
-                )
-                .build()
+            val builder = OneTimeWorkRequestBuilder<GetImageWorker>()
+                    // leave backoff default
+                    .setConstraints(
+                            Constraints.Builder()
+                                    .setRequiresBatteryNotLow(true)
+                                    .build()
+                    )
+            if (withNotification) {
+                builder.setInputData(workDataOf(withNotificationDataField to true))
+            }
+            val getterWork = builder.build()
             WorkManager.getInstance(context).enqueueUniqueWork(
                 workName,
                 ExistingWorkPolicy.REPLACE,
@@ -34,10 +41,20 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
     }
 
     override fun doWork(): Result {
+        val withNotification = inputData.getBoolean(withNotificationDataField, false)
+        var notificationManager: NotificationManager? = null
+        if (withNotification) {
+            notificationManager = ContextCompat.getSystemService(applicationContext, NotificationManager::class.java)
+            notificationManager?.cancelAll()
+        }
+
         val market = PreferenceManager.getDefaultSharedPreferences(applicationContext)
             .getString(applicationContext.getString(R.string.key_selected_market), "")
         if (market == null){
             Timber.i("b1 couldn't get a market")
+            if (withNotification) {
+                notificationManager?.sendNotification(applicationContext.getString(R.string.get_image_failed), applicationContext)
+            }
             return Result.failure()
         }
         val imageId = BingWallpapersApi.getImageInfoBlocking(market)
@@ -58,6 +75,10 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
             return Result.retry()
         }
         Timber.i("b1 GetImageWorker success")
+
+        if (withNotification) {
+            notificationManager?.sendNotification(applicationContext.getString(R.string.got_new_image), applicationContext)
+        }
         return Result.success()
     }
 
@@ -77,7 +98,7 @@ class PeriodicWorker(appContext: Context, workerParams: WorkerParameters) :
         Timber.i("b1 PeriodicWorker work")
 
         // start one-time job for getting - now
-        GetImageWorker.start(applicationContext)
+        GetImageWorker.start(applicationContext, withNotification = true)
 
         // Indicate whether the work finished successfully with the Result
         return Result.success()
@@ -99,7 +120,7 @@ class PeriodicWorkStarter(appContext: Context, workerParams: WorkerParameters) :
         Timber.i("b1 PeriodicWorkStarter work")
 
         // start one-time job for getting - now
-        GetImageWorker.start(applicationContext)
+        GetImageWorker.start(applicationContext, withNotification = true)
 
         // start periodic job
         val getImageWorkRequest =

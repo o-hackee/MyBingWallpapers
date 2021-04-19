@@ -2,4 +2,9 @@
     <string name="app_name">My Bing Wallpapers</string>
     <string name="key_active">active</string>
     <string name="key_selected_market">selectedMarket</string>
+    <string name="mbw_notification_channel_id">MyBingWallpapers_channel</string>
+    <string name="mbw_notification_channel_name">MyBingWallpapers</string>
+    <string name="notification_title">My Bing Wallpapers</string>
+    <string name="got_new_image">Got new image</string>
+    <string name="get_image_failed">Get image failed. See logs for details...</string>
 </resources>
