@@ -9,7 +9,6 @@ class MyApplication : Application(), Configuration.Provider {
 
     override fun onCreate() {
         super.onCreate()
-        Timber.plant(Timber.DebugTree())
         Timber.plant(FileLoggingTree(applicationContext))
     }
 

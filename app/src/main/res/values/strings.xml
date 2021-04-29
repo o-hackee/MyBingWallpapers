@@ -6,5 +6,6 @@
     <string name="mbw_notification_channel_name">MyBingWallpapers</string>
     <string name="notification_title">My Bing Wallpapers</string>
     <string name="got_new_image">Got new image</string>
-    <string name="get_image_failed">Get image failed. See logs for details...</string>
+    <string name="get_image_failed">Get image failed. See logs for details…</string>
+    <string name="get_image_keeps_failing">Get image keeps failing…</string>
 </resources>

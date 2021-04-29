@@ -61,6 +61,11 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
         Timber.i("b1 GetImageWorker imageId = $imageId")
         if (imageId == null) {
             Timber.i("b1 GetImageWorker work failed info")
+
+            if (runAttemptCount > 5) {
+                notificationManager?.sendNotification(applicationContext.getString(R.string.get_image_keeps_failing), applicationContext)
+            }
+
             return Result.retry()
         }
         val stream = BingWallpapersApi.downloadImage(imageId)
