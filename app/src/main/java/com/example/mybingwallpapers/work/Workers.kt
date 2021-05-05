@@ -64,6 +64,7 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
 
             if (runAttemptCount > 5) {
                 notificationManager?.sendNotification(applicationContext.getString(R.string.get_image_keeps_failing), applicationContext)
+                Timber.i("Get image keeps failing!")
             }
 
             return Result.retry()
