@@ -60,7 +60,7 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
         val imageId = BingWallpapersApi.getImageInfoBlocking(market)
         Timber.i("b1 GetImageWorker imageId = $imageId")
         if (imageId == null) {
-            Timber.i("b1 GetImageWorker work failed info")
+            Timber.i("b1 GetImageWorker work failed info, runAttemptCount = $runAttemptCount")
 
             if (runAttemptCount > 5) {
                 notificationManager?.sendNotification(applicationContext.getString(R.string.get_image_keeps_failing), applicationContext)
