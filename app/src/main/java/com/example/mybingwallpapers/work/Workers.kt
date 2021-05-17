@@ -62,7 +62,7 @@ class GetImageWorker(appContext: Context, workerParams: WorkerParameters) :
         if (imageId == null) {
             Timber.i("b1 GetImageWorker work failed info, runAttemptCount = $runAttemptCount")
 
-            if (runAttemptCount > 5) {
+            if (runAttemptCount > 3) {
                 notificationManager?.sendNotification(applicationContext.getString(R.string.get_image_keeps_failing), applicationContext)
                 Timber.i("Get image keeps failing!")
             }
