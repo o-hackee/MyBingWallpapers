@@ -8,4 +8,5 @@
     <string name="got_new_image">Got new image</string>
     <string name="get_image_failed">Get image failed. See logs for details…</string>
     <string name="get_image_keeps_failing">Get image keeps failing…</string>
+    <string name="show_log">Show log</string>
 </resources>

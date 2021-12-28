@@ -14,6 +14,12 @@ import java.util.concurrent.TimeUnit
 // rather do asynchronously: send a message to a buffer and flush there -
 // or use a lib
 class FileLoggingTree(private val applicationContext: Context) : DebugTree() {
+
+    companion object {
+        internal fun getRootRir(context: Context): File =
+            File(context.getExternalFilesDir(null)?.absolutePath, "Log")
+    }
+
     override fun log(priority: Int, tag: String?, message: String, t: Throwable?) {
         super.log(priority, tag, message, t)
         try {
@@ -53,10 +59,7 @@ class FileLoggingTree(private val applicationContext: Context) : DebugTree() {
 
     /*  Helper method to create file*/
     private fun generateLogFile(fileName: String): File? {
-        val root = File(
-                applicationContext.getExternalFilesDir(null)?.absolutePath,
-            "Log"
-        )
+        val root = getRootRir(applicationContext)
         var dirExists = true
         if (!root.exists()) {
             dirExists = root.mkdirs()
